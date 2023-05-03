@@ -1,160 +1,128 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import tkinter as tk
 
-# C extensions
-*.so
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+def add_digit(digit):
+    value = calc.get()
+    if '0' in value and len(value) == 1:
+        value = value[1:]
+    calc.delete(0, tk.END)
+    calc.insert(0, value + digit)
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+def enter():
+    global count, label_osn, lst_cost_ves, lst_results, btn_next
+    count += 1
+    value = calc.get()
+    if count == 1:
+        label_osn.config(text='Цена')
+        label_osn.grid(row=0, column=3, sticky='we')
+        calc.delete(0, tk.END)
+        calc.insert(0, '0')
+    elif count == 3:
+        label_osn.config(text='Итого')
+        label_osn.grid(row=0, column=3, sticky='we')
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+        lst_cost_ves.append(float(value))
+        lst_results.append(lst_cost_ves[-1] * lst_cost_ves[-2])
+        calc.insert(0, str(round(lst_results[-1], 2)))
+        count = 0
 
-# Translations
-*.mo
-*.pot
+    elif count == 2:
+        label_osn.config(text='Вес')
+        label_osn.grid(row=0, column=3, sticky='we')
+        lst_cost_ves.append(float(value))
+        calc.delete(0, tk.END)
+        calc.insert(0, '0')
+    elif count == 0:
+        label_osn.config(text='НАЧНИТЕ')
+        label_osn.grid(row=0, column=3, sticky='we')
+    print(lst_cost_ves)
+    print(lst_results)
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
 
-# Flask stuff:
-instance/
-.webassets-cache
+def clear():
+    calc.delete(0, 'end')
+    calc.insert(0, '0')
 
-# Scrapy stuff:
-.scrapy
 
-# Sphinx documentation
-docs/_build/
+def make_clear_button(c):
+    return tk.Button(text=c, font=('Arial', 15, 'bold'), command=clear, activebackground='#C0C0C0')
 
-# PyBuilder
-.pybuilder/
-target/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+def make_digit_button(digit):
+    return tk.Button(text=digit, font=('Arial', 15, 'bold'), command=lambda: add_digit(digit),
+                     activebackground='#C0C0C0')
 
-# IPython
-profile_default/
-ipython_config.py
 
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+def make_result_button(digit):
+    return tk.Button(text=digit, font=('Arial', 15, 'bold'), command=lambda: result(), activebackground='#C0C0C0')
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
 
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
+def result():
+    global lst_results
+    calc.delete(0, 'end')
+    calc.insert(0, str(round(sum(lst_results), 2)))
 
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/#use-with-ide
-.pdm.toml
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
+def make_buttom_full_clean(digit):
+    return tk.Button(text=digit, font=('Arial', 15, 'bold'), command=lambda: full_clean(), activebackground='#C0C0C0')
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
 
-# SageMath parsed files
-*.sage.py
+def full_clean():
+    global lst_results, lst_cost_ves, count
+    count = 0
+    lst_cost_ves.clear()
+    lst_results.clear()
+    clear()
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
 
-# Spyder project settings
-.spyderproject
-.spyproject
+count = 0
+lst_cost_ves = []
+lst_results = []
+win = tk.Tk()
+win.title('Мамкин калькулятор')
+win.geometry('375x300')
+win.resizable(width=False, height=False)
+calc = tk.Entry(win, bd=5, font=('Arial', 15, 'bold'), justify=tk.RIGHT, width=15)
+calc.insert(0, '0')
 
-# Rope project settings
-.ropeproject
+label_osn = tk.Label(win, text='НАЧНИТЕ', font=('Arial', 15, 'bold'))
+label_finresult = tk.Label(win, text='Итого всего', font=('Arial', 15, 'bold'))
 
-# mkdocs documentation
-/site
+make_digit_button('1').grid(row=1, column=0, sticky='wesn', padx=3, pady=3)
+make_digit_button('2').grid(row=1, column=1, sticky='wesn', padx=3, pady=3)
+make_digit_button('3').grid(row=1, column=2, sticky='wesn', padx=3, pady=3)
+make_digit_button('4').grid(row=2, column=0, sticky='wesn', padx=3, pady=3)
+make_digit_button('5').grid(row=2, column=1, sticky='wesn', padx=3, pady=3)
+make_digit_button('6').grid(row=2, column=2, sticky='wesn', padx=3, pady=3)
+make_digit_button('7').grid(row=3, column=0, sticky='wesn', padx=3, pady=3)
+make_digit_button('8').grid(row=3, column=1, sticky='wesn', padx=3, pady=3)
+make_digit_button('9').grid(row=3, column=2, sticky='wesn', padx=3, pady=3)
+make_digit_button('0').grid(row=4, column=0, sticky='wesn', padx=3, pady=3)
+make_digit_button('.').grid(row=4, column=2, sticky='wesn', padx=3, pady=3)
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+btn_next = tk.Button(text='Начать', font=('Arial', 15, 'bold'), command=lambda: enter(),
+                     activebackground='#C0C0C0').grid(row=1, column=3, sticky='wesn', padx=3, pady=3)
 
-# Pyre type checker
-.pyre/
+make_clear_button('C').grid(row=3, column=3, sticky='wesn', padx=3, pady=3)
 
-# pytype static type analyzer
-.pytype/
+make_result_button('Финальное итого').grid(row=4, column=3, sticky='wesn', padx=3, pady=3)
 
-# Cython debug symbols
-cython_debug/
+label_osn.grid(row=0, column=3, sticky='we')
 
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+make_buttom_full_clean('Полная очистка').grid(row=2, column=3, sticky='wesn', padx=3, pady=3)
+
+calc.grid(row=0, column=0, sticky='wens', columnspan=3)
+win.grid_columnconfigure(0, minsize=60)
+win.grid_columnconfigure(1, minsize=60)
+win.grid_columnconfigure(2, minsize=60)
+win.grid_columnconfigure(3, minsize=60)
+win.grid_columnconfigure(4, minsize=60)
+
+win.grid_rowconfigure(1, minsize=60)
+win.grid_rowconfigure(0, minsize=60)
+win.grid_rowconfigure(2, minsize=60)
+win.grid_rowconfigure(3, minsize=60)
+win.grid_rowconfigure(4, minsize=60)
+
+win.mainloop()
